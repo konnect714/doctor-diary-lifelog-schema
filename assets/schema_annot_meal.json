@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://doctordiary.kr/schemas/annot_meal/1.0.0.json",
+  "title": "Meal Medical Annotation",
+  "description": "Clinical classification of a meal event by SNU medical annotators.",
+  "type": "object",
+  "required": [
+    "event_id",
+    "annotator_id",
+    "annotated_at",
+    "meal_medical_label",
+    "schema_version"
+  ],
+  "properties": {
+    "schema_version": {"type": "string", "const": "1.0.0"},
+    "event_id": {
+      "type": "string",
+      "description": "References the meal event_id in schema_diet.json"
+    },
+    "annotator_id": {
+      "type": "string",
+      "description": "Annotator pseudonym, e.g., 'snu_med_007'"
+    },
+    "annotator_role": {
+      "type": ["string", "null"],
+      "enum": [
+        null,
+        "resident_endocrinology",
+        "resident_internal_medicine",
+        "attending_endocrinology",
+        "nutritionist",
+        "medical_student",
+        "other"
+      ]
+    },
+    "annotated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "meal_medical_label": {
+      "type": "object",
+      "required": ["glycemic_impact", "carb_quality", "meal_balance"],
+      "properties": {
+        "glycemic_impact": {
+          "type": "string",
+          "enum": ["minimal", "moderate", "high", "very_high"]
+        },
+        "carb_quality": {
+          "type": "string",
+          "enum": ["complex_high_fiber", "mixed", "refined", "sugary"]
+        },
+        "meal_balance": {
+          "type": "string",
+          "enum": ["balanced", "carb_heavy", "protein_heavy", "fat_heavy", "unbalanced"]
+        },
+        "adherence_to_diet": {
+          "type": ["string", "null"],
+          "enum": [null, "adherent", "partially_adherent", "non_adherent", "not_applicable"]
+        },
+        "clinical_notes": {
+          "type": ["string", "null"],
+          "description": "Free-text clinical observation (Korean OK)"
+        }
+      },
+      "additionalProperties": false
+    },
+    "confidence": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "Annotator self-rated confidence"
+    },
+    "is_qa_duplicate": {
+      "type": "boolean",
+      "default": false,
+      "description": "True if this is one of the duplicate-annotated samples for inter-annotator agreement measurement"
+    }
+  },
+  "additionalProperties": false
+}

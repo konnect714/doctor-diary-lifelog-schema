@@ -1,0 +1,172 @@
+{
+  "cgm_sample": {
+    "schema_version": "1.0.0",
+    "record_id": "cgm_u_abc123_20260416T090000",
+    "user_id_hash": "u_abc123",
+    "timestamp": "2026-04-16T09:00:00+09:00",
+    "local_timezone": "Asia/Seoul",
+    "minute_of_day": 540,
+    "sin_time": 0.7071067811865475,
+    "cos_time": -0.7071067811865476,
+    "day_of_week": 3,
+    "glucose_mgdl": 156.0,
+    "glucose_token": 116,
+    "missing_mask": 0,
+    "missing_reason": null,
+    "quality_flag": "normal",
+    "device_model": "dexcom_g7",
+    "device_serial_hash": "dev_h_5f8c2",
+    "sensor_session_id": "sess_20260413",
+    "sensor_day": 3,
+    "rate_of_change_mgdl_per_min": 2.4
+  },
+  "cgm_missing_sample": {
+    "schema_version": "1.0.0",
+    "record_id": "cgm_u_abc123_20260416T091500",
+    "user_id_hash": "u_abc123",
+    "timestamp": "2026-04-16T09:15:00+09:00",
+    "local_timezone": "Asia/Seoul",
+    "minute_of_day": 555,
+    "sin_time": 0.6593458151000686,
+    "cos_time": -0.7518398074789776,
+    "day_of_week": 3,
+    "glucose_mgdl": null,
+    "glucose_token": null,
+    "missing_mask": 1,
+    "missing_reason": "sensor_gap",
+    "quality_flag": "unknown",
+    "device_model": "dexcom_g7",
+    "device_serial_hash": "dev_h_5f8c2",
+    "sensor_session_id": "sess_20260413",
+    "sensor_day": 3
+  },
+  "diet_sample": {
+    "schema_version": "1.0.0",
+    "event_id": "meal_8a7b6c5d",
+    "user_id_hash": "u_abc123",
+    "event_start": "2026-04-16T07:30:00+09:00",
+    "event_end": null,
+    "recorded_at": "2026-04-16T07:35:00+09:00",
+    "meal_type": "breakfast",
+    "nutrients": {
+      "kcal": 520,
+      "carb_g": 75.0,
+      "sugar_g": 12.0,
+      "protein_g": 22.0,
+      "fat_g": 15.0,
+      "fiber_g": 6.0,
+      "sodium_mg": 450,
+      "glycemic_index": 68,
+      "glycemic_load": 51
+    },
+    "foods": [
+      {
+        "food_id": "kr_food_0451",
+        "food_name": "백미밥",
+        "portion_g": 210,
+        "portion_unit": "공기",
+        "source": "database"
+      },
+      {
+        "food_id": "kr_food_0812",
+        "food_name": "된장국",
+        "portion_g": 180,
+        "portion_unit": "그릇",
+        "source": "database"
+      },
+      {
+        "food_id": "kr_food_0327",
+        "food_name": "계란말이",
+        "portion_g": 80,
+        "portion_unit": null,
+        "source": "database"
+      }
+    ],
+    "free_text_description": "아침 집밥, 된장국과 계란말이",
+    "photo_id": "photo_7890abcd",
+    "input_method": "manual",
+    "confidence": 0.9,
+    "quality_flag": "high_quality"
+  },
+  "exercise_sample": {
+    "schema_version": "1.0.0",
+    "event_id": "ex_xyz789ab",
+    "user_id_hash": "u_abc123",
+    "event_start": "2026-04-16T18:00:00+09:00",
+    "event_end": "2026-04-16T18:45:00+09:00",
+    "duration_min": 45,
+    "activity_type": "walking",
+    "met_code": "17170",
+    "met_value": 3.5,
+    "intensity": "moderate",
+    "metrics": {
+      "steps": 4500,
+      "distance_m": 3200,
+      "kcal_burned": 180,
+      "hr_avg_bpm": 115,
+      "hr_max_bpm": 135,
+      "elevation_gain_m": 12,
+      "pace_min_per_km": 14.1
+    },
+    "input_method": "wearable_sync",
+    "device_source": "apple_health",
+    "confidence": 0.95
+  },
+  "checkup_sample": {
+    "schema_version": "1.0.0",
+    "checkup_id": "ckup_20251015_u_abc123",
+    "user_id_hash": "u_abc123",
+    "exam_date": "2025-10-15",
+    "exam_type": "national_health_screening",
+    "demographics": {
+      "age_years": 52,
+      "sex": "male",
+      "height_cm": 172.5,
+      "weight_kg": 78.2,
+      "bmi": 26.3,
+      "waist_cm": 92.0
+    },
+    "vitals": {
+      "sbp_mmhg": 134,
+      "dbp_mmhg": 86,
+      "resting_hr_bpm": 72
+    },
+    "blood_glucose": {
+      "fasting_glucose_mgdl": 128,
+      "hba1c_percent": 6.8,
+      "postprandial_2h_mgdl": null,
+      "ogtt_available": false
+    },
+    "lipid_panel": {
+      "total_cholesterol_mgdl": 210,
+      "hdl_mgdl": 48,
+      "ldl_mgdl": 132,
+      "triglycerides_mgdl": 180
+    },
+    "liver_kidney": {
+      "ast_ul": 28,
+      "alt_ul": 32,
+      "ggt_ul": 45,
+      "creatinine_mgdl": 0.95,
+      "egfr": 88,
+      "bun_mgdl": 15
+    },
+    "diabetes_status": {
+      "diabetes_type": "type2",
+      "years_since_diagnosis": 4,
+      "current_medications": ["A10BA02", "A10BK01"],
+      "insulin_therapy": false
+    },
+    "comorbidities": ["I10", "E78.5"],
+    "family_history": {
+      "diabetes": true,
+      "cardiovascular": true,
+      "details_hash": "fh_abc456"
+    },
+    "smoking": "former",
+    "alcohol_weekly_units": 7,
+    "data_source": "imported_from_checkup_report",
+    "sensitive_access_required": true,
+    "_missing_fields": ["blood_glucose.postprandial_2h_mgdl"]
+  }
+}

@@ -1,0 +1,140 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://doctordiary.kr/schemas/checkup/1.0.0.json",
+  "title": "Doctor Diary Health Checkup Record",
+  "description": "Static context. Attached to CGM windows as conditioning embedding, not mixed into time series.",
+  "type": "object",
+  "required": [
+    "checkup_id",
+    "user_id_hash",
+    "exam_date",
+    "exam_type",
+    "schema_version"
+  ],
+  "properties": {
+    "schema_version": {"type": "string", "const": "1.0.0"},
+    "checkup_id": {"type": "string"},
+    "user_id_hash": {"type": "string", "pattern": "^[A-Za-z0-9_-]+$"},
+    "exam_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date only (no time); checkups are daily granularity"
+    },
+    "exam_type": {
+      "type": "string",
+      "enum": [
+        "national_health_screening",
+        "company_checkup",
+        "comprehensive_premium",
+        "diabetes_followup",
+        "self_reported"
+      ]
+    },
+    "demographics": {
+      "type": "object",
+      "properties": {
+        "age_years": {"type": ["integer", "null"], "minimum": 0, "maximum": 120},
+        "sex": {"type": ["string", "null"], "enum": [null, "male", "female", "other"]},
+        "height_cm": {"type": ["number", "null"], "minimum": 50, "maximum": 250},
+        "weight_kg": {"type": ["number", "null"], "minimum": 10, "maximum": 300},
+        "bmi": {"type": ["number", "null"], "minimum": 8, "maximum": 80},
+        "waist_cm": {"type": ["number", "null"], "minimum": 30, "maximum": 200}
+      },
+      "additionalProperties": false
+    },
+    "vitals": {
+      "type": "object",
+      "properties": {
+        "sbp_mmhg": {"type": ["integer", "null"], "minimum": 50, "maximum": 260},
+        "dbp_mmhg": {"type": ["integer", "null"], "minimum": 30, "maximum": 180},
+        "resting_hr_bpm": {"type": ["integer", "null"], "minimum": 30, "maximum": 230}
+      },
+      "additionalProperties": false
+    },
+    "blood_glucose": {
+      "type": "object",
+      "properties": {
+        "fasting_glucose_mgdl": {"type": ["number", "null"], "minimum": 20, "maximum": 600},
+        "hba1c_percent": {"type": ["number", "null"], "minimum": 3, "maximum": 20},
+        "postprandial_2h_mgdl": {"type": ["number", "null"], "minimum": 20, "maximum": 800},
+        "ogtt_available": {"type": "boolean", "default": false}
+      },
+      "additionalProperties": false
+    },
+    "lipid_panel": {
+      "type": "object",
+      "properties": {
+        "total_cholesterol_mgdl": {"type": ["number", "null"], "minimum": 0},
+        "hdl_mgdl": {"type": ["number", "null"], "minimum": 0},
+        "ldl_mgdl": {"type": ["number", "null"], "minimum": 0},
+        "triglycerides_mgdl": {"type": ["number", "null"], "minimum": 0}
+      },
+      "additionalProperties": false
+    },
+    "liver_kidney": {
+      "type": "object",
+      "properties": {
+        "ast_ul": {"type": ["number", "null"], "minimum": 0},
+        "alt_ul": {"type": ["number", "null"], "minimum": 0},
+        "ggt_ul": {"type": ["number", "null"], "minimum": 0},
+        "creatinine_mgdl": {"type": ["number", "null"], "minimum": 0},
+        "egfr": {"type": ["number", "null"], "minimum": 0},
+        "bun_mgdl": {"type": ["number", "null"], "minimum": 0}
+      },
+      "additionalProperties": false
+    },
+    "diabetes_status": {
+      "type": "object",
+      "properties": {
+        "diabetes_type": {
+          "type": "string",
+          "enum": ["none", "prediabetes", "type1", "type2", "gestational", "mody", "other", "unknown"]
+        },
+        "years_since_diagnosis": {"type": ["number", "null"], "minimum": 0},
+        "current_medications": {
+          "type": "array",
+          "items": {"type": "string", "description": "ATC code"}
+        },
+        "insulin_therapy": {"type": "boolean", "default": false}
+      },
+      "additionalProperties": false
+    },
+    "comorbidities": {
+      "type": "array",
+      "items": {"type": "string", "description": "ICD-10 code"}
+    },
+    "family_history": {
+      "type": "object",
+      "properties": {
+        "diabetes": {"type": ["boolean", "null"]},
+        "cardiovascular": {"type": ["boolean", "null"]},
+        "details_hash": {"type": ["string", "null"]}
+      },
+      "additionalProperties": false
+    },
+    "smoking": {
+      "type": ["string", "null"],
+      "enum": [null, "never", "former", "current", "unknown"]
+    },
+    "alcohol_weekly_units": {"type": ["number", "null"], "minimum": 0},
+    "data_source": {
+      "type": "string",
+      "enum": [
+        "imported_from_checkup_report",
+        "manual_entry",
+        "ehr_api",
+        "unknown"
+      ]
+    },
+    "sensitive_access_required": {
+      "type": "boolean",
+      "default": true,
+      "description": "Fields like medications and comorbidities require restricted access"
+    },
+    "_missing_fields": {
+      "type": "array",
+      "items": {"type": "string"}
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,85 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://doctordiary.kr/schemas/annot_cgm_event/1.0.0.json",
+  "title": "CGM Clinical Event Annotation",
+  "description": "SNU medical annotators label clinically-meaningful events within a CGM window.",
+  "type": "object",
+  "required": [
+    "cgm_window_id",
+    "user_id_hash",
+    "annotator_id",
+    "annotated_at",
+    "start_timestamp",
+    "end_timestamp",
+    "events",
+    "schema_version"
+  ],
+  "properties": {
+    "schema_version": {"type": "string", "const": "1.0.0"},
+    "cgm_window_id": {
+      "type": "string",
+      "description": "Unique id for the CGM window being annotated"
+    },
+    "user_id_hash": {"type": "string", "pattern": "^[A-Za-z0-9_-]+$"},
+    "annotator_id": {"type": "string"},
+    "annotator_role": {
+      "type": ["string", "null"],
+      "enum": [
+        null,
+        "resident_endocrinology",
+        "resident_internal_medicine",
+        "attending_endocrinology",
+        "nutritionist",
+        "medical_student",
+        "other"
+      ]
+    },
+    "annotated_at": {"type": "string", "format": "date-time"},
+    "start_timestamp": {"type": "string", "format": "date-time"},
+    "end_timestamp": {"type": "string", "format": "date-time"},
+    "events": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["event_type", "start", "severity"],
+        "properties": {
+          "event_type": {
+            "type": "string",
+            "enum": [
+              "postprandial_spike",
+              "hypoglycemia",
+              "nocturnal_hypo",
+              "dawn_phenomenon",
+              "somogyi_effect",
+              "exercise_induced_drop",
+              "stress_spike",
+              "sensor_artifact",
+              "normal_stable"
+            ]
+          },
+          "start": {"type": "string", "format": "date-time"},
+          "peak": {"type": ["string", "null"], "format": "date-time"},
+          "end": {"type": ["string", "null"], "format": "date-time"},
+          "peak_glucose_mgdl": {"type": ["number", "null"]},
+          "nadir_glucose_mgdl": {"type": ["number", "null"]},
+          "severity": {
+            "type": "string",
+            "enum": ["mild", "moderate", "severe", "critical"]
+          },
+          "likely_cause": {
+            "type": ["string", "null"],
+            "description": "Reference to another event_id (meal, exercise, medication) if attributable"
+          },
+          "likely_cause_type": {
+            "type": ["string", "null"],
+            "enum": [null, "meal", "exercise", "medication", "stress", "illness", "unknown"]
+          },
+          "clinical_notes": {"type": ["string", "null"]}
+        },
+        "additionalProperties": false
+      }
+    },
+    "is_qa_duplicate": {"type": "boolean", "default": false}
+  },
+  "additionalProperties": false
+}

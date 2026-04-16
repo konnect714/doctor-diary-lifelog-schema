@@ -1,0 +1,59 @@
+{
+  "annot_meal_sample": {
+    "schema_version": "1.0.0",
+    "event_id": "meal_8a7b6c5d",
+    "annotator_id": "snu_med_007",
+    "annotator_role": "resident_endocrinology",
+    "annotated_at": "2026-04-18T14:30:00+09:00",
+    "meal_medical_label": {
+      "glycemic_impact": "high",
+      "carb_quality": "refined",
+      "meal_balance": "carb_heavy",
+      "adherence_to_diet": "non_adherent",
+      "clinical_notes": "정제 탄수화물 위주, 섬유소 부족. 식후 혈당 급상승 예상."
+    },
+    "confidence": 0.9,
+    "is_qa_duplicate": false
+  },
+  "annot_cgm_event_sample": {
+    "schema_version": "1.0.0",
+    "cgm_window_id": "cgm_u_abc123_20260416_070000",
+    "user_id_hash": "u_abc123",
+    "annotator_id": "snu_med_007",
+    "annotator_role": "resident_endocrinology",
+    "annotated_at": "2026-04-18T14:35:00+09:00",
+    "start_timestamp": "2026-04-16T07:00:00+09:00",
+    "end_timestamp": "2026-04-16T11:00:00+09:00",
+    "events": [
+      {
+        "event_type": "postprandial_spike",
+        "start": "2026-04-16T08:15:00+09:00",
+        "peak": "2026-04-16T09:00:00+09:00",
+        "end": "2026-04-16T10:15:00+09:00",
+        "peak_glucose_mgdl": 245,
+        "nadir_glucose_mgdl": null,
+        "severity": "severe",
+        "likely_cause": "meal_8a7b6c5d",
+        "likely_cause_type": "meal",
+        "clinical_notes": "정상 범위 초과 기간 65분"
+      }
+    ],
+    "is_qa_duplicate": false
+  },
+  "annot_quality_sample": {
+    "schema_version": "1.0.0",
+    "user_id_hash": "u_abc123",
+    "date_range": ["2026-04-10", "2026-04-16"],
+    "annotator_id": "snu_med_007",
+    "annotated_at": "2026-04-18T15:00:00+09:00",
+    "quality_label": {
+      "overall": "good",
+      "cgm_coverage": 0.92,
+      "diet_logging_completeness": "partial",
+      "exercise_logging_completeness": "good",
+      "suspicious_patterns": ["sensor_pressure_artifact_20260412_0300"],
+      "recommendation": "usable_for_training",
+      "exclusion_reason": null
+    }
+  }
+}

@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://doctordiary.kr/schemas/annot_quality/1.0.0.json",
+  "title": "Data Quality Annotation",
+  "description": "Segment-level quality judgment for inclusion/exclusion in training.",
+  "type": "object",
+  "required": [
+    "user_id_hash",
+    "date_range",
+    "annotator_id",
+    "annotated_at",
+    "quality_label",
+    "schema_version"
+  ],
+  "properties": {
+    "schema_version": {"type": "string", "const": "1.0.0"},
+    "user_id_hash": {"type": "string", "pattern": "^[A-Za-z0-9_-]+$"},
+    "date_range": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "items": {"type": "string", "format": "date"},
+      "description": "[start_date, end_date]"
+    },
+    "annotator_id": {"type": "string"},
+    "annotated_at": {"type": "string", "format": "date-time"},
+    "quality_label": {
+      "type": "object",
+      "required": ["overall", "recommendation"],
+      "properties": {
+        "overall": {
+          "type": "string",
+          "enum": ["excellent", "good", "fair", "poor", "unusable"]
+        },
+        "cgm_coverage": {
+          "type": ["number", "null"],
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Fraction of expected CGM steps with valid measurements"
+        },
+        "diet_logging_completeness": {
+          "type": "string",
+          "enum": ["complete", "good", "partial", "sparse", "missing"]
+        },
+        "exercise_logging_completeness": {
+          "type": "string",
+          "enum": ["complete", "good", "partial", "sparse", "missing"]
+        },
+        "suspicious_patterns": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Tags identifying specific anomalies (e.g., 'sensor_pressure_artifact_20260412_0300')"
+        },
+        "recommendation": {
+          "type": "string",
+          "enum": ["usable_for_training", "qa_only", "exclude"]
+        },
+        "exclusion_reason": {
+          "type": ["string", "null"],
+          "description": "Required if recommendation == 'exclude'"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

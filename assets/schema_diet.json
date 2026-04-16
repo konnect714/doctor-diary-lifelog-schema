@@ -1,0 +1,113 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://doctordiary.kr/schemas/diet/1.0.0.json",
+  "title": "Doctor Diary Diet Event",
+  "description": "Single meal/snack event. Event-based, not grid-aligned. Grid projection happens at training time.",
+  "type": "object",
+  "required": [
+    "event_id",
+    "user_id_hash",
+    "event_start",
+    "meal_type",
+    "nutrients",
+    "input_method",
+    "schema_version"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "1.0.0"
+    },
+    "event_id": {
+      "type": "string",
+      "pattern": "^meal_[A-Za-z0-9_-]+$"
+    },
+    "user_id_hash": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]+$"
+    },
+    "event_start": {
+      "type": "string",
+      "format": "date-time",
+      "description": "User-reported meal start time"
+    },
+    "event_end": {
+      "type": ["string", "null"],
+      "format": "date-time",
+      "description": "Null if unknown. Assume 15 min default in training if null."
+    },
+    "recorded_at": {
+      "type": ["string", "null"],
+      "format": "date-time",
+      "description": "Actual timestamp when user entered this event (may be hours after event_start)"
+    },
+    "meal_type": {
+      "type": "string",
+      "enum": ["breakfast", "lunch", "dinner", "snack", "late_night", "unknown"]
+    },
+    "nutrients": {
+      "type": "object",
+      "required": ["kcal", "carb_g"],
+      "properties": {
+        "kcal": {"type": ["number", "null"], "minimum": 0},
+        "carb_g": {"type": ["number", "null"], "minimum": 0},
+        "sugar_g": {"type": ["number", "null"], "minimum": 0},
+        "protein_g": {"type": ["number", "null"], "minimum": 0},
+        "fat_g": {"type": ["number", "null"], "minimum": 0},
+        "fiber_g": {"type": ["number", "null"], "minimum": 0},
+        "sodium_mg": {"type": ["number", "null"], "minimum": 0},
+        "cholesterol_mg": {"type": ["number", "null"], "minimum": 0},
+        "glycemic_index": {"type": ["number", "null"], "minimum": 0, "maximum": 200},
+        "glycemic_load": {"type": ["number", "null"], "minimum": 0},
+        "_missing_fields": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Names of fields explicitly missing (not zero)"
+        }
+      },
+      "additionalProperties": false
+    },
+    "foods": {
+      "type": "array",
+      "description": "Optional breakdown of individual food items",
+      "items": {
+        "type": "object",
+        "required": ["food_name"],
+        "properties": {
+          "food_id": {"type": ["string", "null"], "description": "Doctor Diary internal food DB id"},
+          "food_name": {"type": "string"},
+          "portion_g": {"type": ["number", "null"], "minimum": 0},
+          "portion_unit": {"type": ["string", "null"], "description": "e.g., '공기', '그릇', '조각'"},
+          "source": {
+            "type": "string",
+            "enum": ["database", "user_custom", "photo_ai", "imported"]
+          }
+        }
+      }
+    },
+    "free_text_description": {
+      "type": ["string", "null"],
+      "description": "User's free-text note. Will be used by annotators; not fed directly to model."
+    },
+    "photo_id": {
+      "type": ["string", "null"],
+      "description": "Reference to meal photo (storage system handles actual file)"
+    },
+    "input_method": {
+      "type": "string",
+      "enum": ["manual", "photo_ai", "barcode", "voice", "import"]
+    },
+    "confidence": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "Confidence in nutrient values. 1.0 = barcode/DB, <0.7 = AI photo estimate."
+    },
+    "quality_flag": {
+      "type": "string",
+      "enum": ["high_quality", "normal", "low_quality"],
+      "default": "normal"
+    }
+  },
+  "additionalProperties": false
+}

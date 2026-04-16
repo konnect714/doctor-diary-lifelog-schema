@@ -1,0 +1,140 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://doctordiary.kr/schemas/cgm/1.0.0.json",
+  "title": "Doctor Diary CGM Record",
+  "description": "Single 5-minute CGM measurement. Based on GluFormer and CGMformer standard grid (288 steps/day).",
+  "type": "object",
+  "required": [
+    "record_id",
+    "user_id_hash",
+    "timestamp",
+    "minute_of_day",
+    "sin_time",
+    "cos_time",
+    "day_of_week",
+    "glucose_mgdl",
+    "missing_mask",
+    "device_model",
+    "schema_version"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "1.0.0"
+    },
+    "record_id": {
+      "type": "string",
+      "description": "Stable unique id, e.g., 'cgm_u_xxx_20260416T0900'"
+    },
+    "user_id_hash": {
+      "type": "string",
+      "description": "HMAC-SHA256 pseudonymized user id. Must NOT be real id or PII.",
+      "pattern": "^[A-Za-z0-9_-]+$"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 with timezone offset, e.g., '2026-04-16T09:00:00+09:00'"
+    },
+    "local_timezone": {
+      "type": "string",
+      "description": "IANA timezone name, e.g., 'Asia/Seoul'. For travel handling.",
+      "default": "Asia/Seoul"
+    },
+    "minute_of_day": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1439,
+      "description": "Minutes since midnight local time"
+    },
+    "sin_time": {
+      "type": "number",
+      "minimum": -1,
+      "maximum": 1,
+      "description": "sin(2*pi*minute_of_day/1440) for diurnal encoding"
+    },
+    "cos_time": {
+      "type": "number",
+      "minimum": -1,
+      "maximum": 1
+    },
+    "day_of_week": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 6,
+      "description": "Monday=0, Sunday=6"
+    },
+    "glucose_mgdl": {
+      "type": ["number", "null"],
+      "description": "Raw interstitial glucose in mg/dL. Null if missing."
+    },
+    "glucose_token": {
+      "type": ["integer", "null"],
+      "minimum": 0,
+      "maximum": 259,
+      "description": "Derived discrete token: clip(round(glucose_mgdl) - 40, 0, 259). Null if glucose_mgdl is null."
+    },
+    "missing_mask": {
+      "type": "integer",
+      "enum": [0, 1],
+      "description": "0 = valid measurement, 1 = missing/invalid"
+    },
+    "missing_reason": {
+      "type": ["string", "null"],
+      "enum": [
+        null,
+        "sensor_gap",
+        "sensor_warmup",
+        "calibration",
+        "manual_removal",
+        "out_of_range",
+        "unknown"
+      ],
+      "description": "Required when missing_mask == 1"
+    },
+    "quality_flag": {
+      "type": "string",
+      "enum": [
+        "normal",
+        "pressure_induced_drop",
+        "rapid_change",
+        "sensor_degraded",
+        "unknown"
+      ],
+      "default": "normal"
+    },
+    "device_model": {
+      "type": "string",
+      "enum": [
+        "dexcom_g6",
+        "dexcom_g7",
+        "freestyle_libre_1",
+        "freestyle_libre_2",
+        "freestyle_libre_3",
+        "medtronic_guardian",
+        "caregiver_sens",
+        "other",
+        "unknown"
+      ]
+    },
+    "device_serial_hash": {
+      "type": ["string", "null"],
+      "description": "Pseudonymized device serial for lifecycle tracking. Never raw serial."
+    },
+    "sensor_session_id": {
+      "type": ["string", "null"],
+      "description": "Identifies one continuous sensor wear session"
+    },
+    "sensor_day": {
+      "type": ["integer", "null"],
+      "minimum": 0,
+      "maximum": 30,
+      "description": "Day number within current sensor session (0 = insertion day)"
+    },
+    "rate_of_change_mgdl_per_min": {
+      "type": ["number", "null"],
+      "description": "Optional: glucose change rate if provided by device"
+    }
+  },
+  "additionalProperties": false
+}
