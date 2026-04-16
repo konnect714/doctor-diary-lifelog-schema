@@ -42,7 +42,7 @@
   },
   "diet_sample": {
     "schema_version": "1.0.0",
-    "event_id": "meal_8a7b6c5d",
+    "event_id": "meal_u_abc123_20260416_073000",
     "user_id_hash": "u_abc123",
     "event_start": "2026-04-16T07:30:00+09:00",
     "event_end": null,
@@ -56,8 +56,10 @@
       "fat_g": 15.0,
       "fiber_g": 6.0,
       "sodium_mg": 450,
+      "cholesterol_mg": null,
       "glycemic_index": 68,
-      "glycemic_load": 51
+      "glycemic_load": 51,
+      "_missing_fields": ["cholesterol_mg"]
     },
     "foods": [
       {

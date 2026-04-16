@@ -34,7 +34,7 @@
     "event_end": {
       "type": ["string", "null"],
       "format": "date-time",
-      "description": "Null if unknown. Assume 15 min default in training if null."
+      "description": "ISO 8601 datetime. Null if unknown; pipeline MUST apply 15-minute default during grid alignment. Validation scripts should warn when null."
     },
     "recorded_at": {
       "type": ["string", "null"],
@@ -107,6 +107,20 @@
       "type": "string",
       "enum": ["high_quality", "normal", "low_quality"],
       "default": "normal"
+    },
+    "postprandial_peak_mgdl": {
+      "type": ["number", "null"],
+      "description": "Peak glucose after meal (annotated or auto-detected)"
+    },
+    "time_to_peak_minutes": {
+      "type": ["integer", "null"],
+      "minimum": 0,
+      "description": "Minutes from meal start to glucose peak"
+    },
+    "time_to_baseline_minutes": {
+      "type": ["integer", "null"],
+      "minimum": 0,
+      "description": "Minutes from meal start to baseline recovery"
     }
   },
   "additionalProperties": false

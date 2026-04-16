@@ -20,6 +20,19 @@ token_id = clip(round(glucose_mgdl) - 40, 0, 259)
 
 범위 외 값은 `out_of_range_flag`로 별도 표시.
 
+### GluFormer 호환성: 460 bin 확장 토큰화
+
+GluFormer(Nature 2026)은 **460개 bin(40~500 mg/dL)** 토큰화를 사용하여 더 넓은 혈당 범위를 세분화합니다:
+
+```
+token_id_extended = clip(round(glucose_mgdl) - 40, 0, 459)
+```
+
+스키마의 선택적 `glucose_token_extended` 필드로 지원하며, 이를 통해:
+- **기존 호환성 유지**: 기본 260 bin 토큰화로 학습하는 모델은 영향 없음
+- **GluFormer 적용 가능**: 460 bin 버전이 필요한 모델은 확장 필드 사용
+- **향후 확장성**: 추가적 토큰화 방식도 같은 패턴으로 추가 가능
+
 ### 왜 이산 토큰인가
 
 - autoregressive LM 스타일 학습에 직접 사용 가능 (categorical cross-entropy)

@@ -63,7 +63,7 @@ def align_cgm(cgm_records: list, grid: np.ndarray) -> dict:
     """Map CGM records to grid slots."""
     n = len(grid)
     glucose = np.full(n, np.nan, dtype=np.float32)
-    token = np.full(n, -1, dtype=np.int16)
+    token = np.full(n, np.nan, dtype=np.float32)  # Use NaN for missing, not -1
     mask = np.ones(n, dtype=bool)  # True = missing
 
     # Index records by their grid step
@@ -78,7 +78,7 @@ def align_cgm(cgm_records: list, grid: np.ndarray) -> dict:
     for i, rec in by_step.items():
         if rec.get("missing_mask", 1) == 0 and rec.get("glucose_mgdl") is not None:
             glucose[i] = rec["glucose_mgdl"]
-            token[i] = rec.get("glucose_token") if rec.get("glucose_token") is not None else -1
+            token[i] = float(rec.get("glucose_token")) if rec.get("glucose_token") is not None else np.nan
             mask[i] = False
 
     # Time features
@@ -121,20 +121,37 @@ def align_diet(diet_records: list, grid: np.ndarray) -> dict:
         kcal = nutrients.get("kcal") or 0
 
         for i, t in enumerate(grid):
-            # Active during meal
+            # Active during meal (handle midnight crossing)
             if start <= t < end:
                 active[i] = True
                 kcal_active[i] = kcal
+            # Handle meals spanning midnight (23:50-00:10 case)
+            elif start.date() > t.date() and start.time() > t.time():
+                # Event started "tomorrow" but we're looking at "today" → check if it wraps from previous midnight
+                pass
+
             # Minutes since start: from meal start, up to 4 hours after
             delta_min = (t - start).total_seconds() / 60
             if 0 <= delta_min <= 240:
                 if delta_min < mins_since_start[i]:
                     mins_since_start[i] = delta_min
-            # Cumulative carb in past 2 hours: include events ending within [t-2h, t]
-            if t - timedelta(hours=2) <= end <= t:
-                carb_cum_2h[i] += carb
-            elif start <= t < end:  # ongoing meal: partial count
-                carb_cum_2h[i] += carb
+
+            # Cumulative carb in past 2 hours with exact overlap calculation
+            # Include events with any overlap in [t-2h, t]
+            window_start = t - timedelta(hours=2)
+            if start < t and end > window_start:
+                # Calculate exact overlap between [window_start, t] and [start, end]
+                overlap_start = max(start, window_start)
+                overlap_end = min(end, t)
+                if overlap_end > overlap_start:
+                    # Proportional carb contribution based on overlap duration
+                    event_duration = (end - start).total_seconds()
+                    if event_duration > 0:
+                        overlap_duration = (overlap_end - overlap_start).total_seconds()
+                        carb_cum_2h[i] += carb * (overlap_duration / event_duration)
+                    else:
+                        # Point event (start == end), count it fully
+                        carb_cum_2h[i] += carb
 
     return {
         "diet_active": active,

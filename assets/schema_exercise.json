@@ -94,6 +94,16 @@
       "type": "number",
       "minimum": 0,
       "maximum": 1
+    },
+    "heart_rate_variability_rmssd": {
+      "type": ["number", "null"],
+      "minimum": 0,
+      "description": "RMSSD HRV during exercise (ms)"
+    },
+    "post_exercise_sensitivity_hours": {
+      "type": ["number", "null"],
+      "minimum": 0,
+      "description": "Estimated hours of improved insulin sensitivity post-exercise"
     }
   },
   "additionalProperties": false

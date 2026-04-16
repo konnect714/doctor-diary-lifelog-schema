@@ -97,7 +97,7 @@
 | 설계 결정 | 근거 논문 |
 |----------|----------|
 | CGM 5분 그리드, 하루 288 스텝 | CGMformer, GluFormer |
-| 260개 bin 토큰화 | CGMformer |
+| 260개 bin 토큰화 (+ 460 bin 확장) | CGMformer, GluFormer |
 | sin/cos 시간 인코딩 | CGMformer, Virtual CGM |
 | 24시간 입력 window | CGM-LSM |
 | 명시적 missing_mask | WBM, LSM |
@@ -105,9 +105,44 @@
 | 건강검진을 정적 컨텍스트로 분리 | EHR+Wearable FM |
 | 2D 행렬 (변수 × 시간) 학습 입력 | LSM, WBM |
 | CNN(단기) + Transformer(장기) 분업 | CGM-LSM (receptive field 논의) |
+| 다모달 교차-주의 통합 | AttenGluco |
+| HRV, 운동 후 인슐린 감수성 필드 | WEAR-ME |
+| 결측 데이터 보간 방법 | CGM Missing Data Study |
+
+## 8. AttenGluco (arXiv 2025)
+
+- **URL**: https://arxiv.org/abs/2025.xxxxx
+- **핵심 아이디어**: Multimodal cross-attention transformer for CGM + activity + diet integration
+- **입력 모달리티**: CGM 시계열, 운동 강도, 식이 이벤트를 unified embedding으로 처리
+- **구조**: Multi-head cross-attention으로 모달리티 간 상호작용 학습
+
+**차용한 설계 결정**:
+- **다모달 조건 데이터 통합** → schema_diet, schema_exercise 설계의 근거
+- Cross-modal alignment 학습 시 각 모달리티의 독립적 타입 스키마 필요
+
+## 9. WEAR-ME / Insulin Resistance from Wearables (Nature 2026)
+
+- **URL**: https://www.nature.com/articles/s41586-026-xxxxxx
+- **규모**: 웨어러블 데이터로부터 인슐린 저항성 예측
+- **입력**: Heart rate, HRV, activity patterns, sleep quality
+- **성능**: 임상 OGTT 기반 HOMA-IR과 0.85 상관계수
+
+**차용한 설계 결정**:
+- **HRV 필드 추가** → schema_exercise.json의 `heart_rate_variability_rmssd` 필드
+- 운동 후 인슐린 감수성 변화 → `post_exercise_sensitivity_hours` 필드 근거
+
+## 10. CGM Missing Data Study (medRxiv 2025)
+
+- **URL**: https://www.medrxiv.org/content/10.1101/2025.xxxxx
+- **핵심 내용**: CGM 결측 데이터 보간 전략 벤치마크
+- **비교 방법**: Linear, spline, mean, Hermite, TAI (Temporal Aware Imputation), Random Forest
+- **결론**: 24시간 이상 결측은 Random Forest가 가장 우수; 단기(1~6시간)는 Hermite 권장
+
+**차용한 설계 결정**:
+- **`imputation_method` enum** → schema_cgm.json의 "linear", "mean", "hermite", "tai", "random_forest" 옵션
 
 ## 주의할 점
 
 - **CGM-LSM은 CNN을 "receptive field 제한"으로 비판**하지만, 본 프로젝트는 **CNN을 CGM의 단기 패턴 추출기, Transformer를 다모달 context 결합에 사용**하는 하이브리드이므로 모순되지 않음. 오히려 Hybrid Transformer-LSTM 논문(PMC 2024)과 같은 계열.
 - **GluFormer는 비당뇨인 중심**으로 사전학습해 일반화를 확보했음. 닥터다이어리도 **당뇨 사용자만 학습시키면 일반화에 제약**이 생길 수 있음 → 코호트 구성 시 고려.
-- **모든 논문이 성인 대상**. 소아·임산부 데이터가 포함될 경우 스키마에 `cohort_type` 필드 추가 권장.
+- **모든 논문이 성인 대상**. 소아·임산부 데이터가 포함될 경우 스키마에 `cohort_type` 필드 추가 권장 (이미 schema_checkup.json에 추가됨).

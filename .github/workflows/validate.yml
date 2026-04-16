@@ -29,5 +29,78 @@ jobs:
       - name: Validate sample data
         run: python scripts/validate.py --sample
 
+      - name: JSON syntax validation for schema files
+        run: |
+          python -c "
+          import json
+          from pathlib import Path
+          errors = 0
+          for f in Path('assets').glob('*.json'):
+              try:
+                  json.load(open(f))
+                  print(f'✓ {f.name}')
+              except json.JSONDecodeError as e:
+                  print(f'✗ {f.name}: {e}')
+                  errors += 1
+          exit(errors)
+          "
+
+      - name: Schema cross-reference validation
+        run: |
+          python -c "
+          import json
+          from pathlib import Path
+          schemas = {}
+          for f in Path('assets').glob('schema_*.json'):
+              data = json.load(open(f))
+              if '\$id' in data:
+                  schemas[data['\$id']] = f.name
+
+          errors = 0
+          for schema_id in schemas:
+              print(f'✓ {schema_id}')
+
+          # Check consistency: all schema_version are 1.0.0
+          for f in Path('assets').glob('schema_*.json'):
+              data = json.load(open(f))
+              if 'properties' in data and 'schema_version' in data['properties']:
+                  expected = data['properties']['schema_version'].get('const')
+                  if expected != '1.0.0':
+                      print(f'✗ {f.name}: unexpected schema_version {expected}')
+                      errors += 1
+
+          exit(errors)
+          "
+
+      - name: Lint check with ruff
+        run: ruff check scripts/ --select=E,W,F
+
+      - name: Validate enum no duplicates
+        run: |
+          python -c "
+          import json
+          from pathlib import Path
+          errors = 0
+          for f in Path('assets').glob('schema_*.json'):
+              data = json.load(open(f))
+              def check_enums(obj, path=''):
+                  global errors
+                  if isinstance(obj, dict):
+                      if 'enum' in obj and isinstance(obj['enum'], list):
+                          seen = set()
+                          for val in obj['enum']:
+                              if val in seen:
+                                  print(f'✗ {f.name}: duplicate enum value {val} at {path}')
+                                  errors += 1
+                              seen.add(val)
+                      for k, v in obj.items():
+                          check_enums(v, f'{path}.{k}')
+                  elif isinstance(obj, list):
+                      for i, item in enumerate(obj):
+                          check_enums(item, f'{path}[{i}]')
+              check_enums(data)
+          exit(errors)
+          "
+
       - name: Run alignment smoke test
         run: bash tests/test_align.sh

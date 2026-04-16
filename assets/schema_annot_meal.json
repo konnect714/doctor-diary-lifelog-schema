@@ -15,6 +15,7 @@
     "schema_version": {"type": "string", "const": "1.0.0"},
     "event_id": {
       "type": "string",
+      "pattern": "^[a-z]+_u_[A-Za-z0-9]+_\\d{8}_\\d{6}$",
       "description": "References the meal event_id in schema_diet.json"
     },
     "annotator_id": {

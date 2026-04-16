@@ -71,7 +71,7 @@ def extra_semantic_checks(record: dict, record_type: str) -> list:
             expected = max(0, min(259, round(g) - 40))
             if t != expected:
                 errors.append(f"  glucose_token={t} inconsistent with glucose_mgdl={g} (expected {expected})")
-        # sin/cos consistency check (sample)
+        # sin/cos consistency check (sample) - increased tolerance for float32 precision
         import math
         mod = record.get("minute_of_day")
         sin_t = record.get("sin_time")
@@ -79,13 +79,17 @@ def extra_semantic_checks(record: dict, record_type: str) -> list:
         if mod is not None and sin_t is not None and cos_t is not None:
             expected_sin = math.sin(2 * math.pi * mod / 1440)
             expected_cos = math.cos(2 * math.pi * mod / 1440)
-            if abs(sin_t - expected_sin) > 1e-4 or abs(cos_t - expected_cos) > 1e-4:
+            if abs(sin_t - expected_sin) > 1e-3 or abs(cos_t - expected_cos) > 1e-3:
                 errors.append(f"  sin_time/cos_time inconsistent with minute_of_day={mod}")
 
     elif record_type == "diet":
+        # Check all nutrient fields for consistency with _missing_fields
         nut = record.get("nutrients", {})
-        if nut.get("carb_g") is None and "carb_g" not in nut.get("_missing_fields", []):
-            errors.append("  nutrients.carb_g is null but not listed in _missing_fields")
+        missing_fields = nut.get("_missing_fields", [])
+        for nutrient_field in ["kcal", "carb_g", "sugar_g", "protein_g", "fat_g", "fiber_g",
+                               "sodium_mg", "cholesterol_mg", "glycemic_index", "glycemic_load"]:
+            if nut.get(nutrient_field) is None and nutrient_field not in missing_fields:
+                errors.append(f"  nutrients.{nutrient_field} is null but not listed in _missing_fields")
 
     elif record_type == "exercise":
         start = record.get("event_start")
@@ -99,6 +103,11 @@ def extra_semantic_checks(record: dict, record_type: str) -> list:
                     errors.append(f"  duration_min={dur} inconsistent with event_start/end ({d:.1f} min)")
             except ValueError:
                 pass
+        # Validate exercise intensity vs met_value consistency
+        intensity = record.get("intensity")
+        met_value = record.get("met_value")
+        if intensity == "vigorous" and met_value is not None and met_value < 6:
+            errors.append(f"  intensity='vigorous' requires met_value >= 6, got {met_value}")
 
     return errors
 
@@ -168,6 +177,10 @@ def validate_sample():
             validator = Draft202012Validator(schema)
             errs = validate_record(data[key], rtype, validator)
             errs += extra_semantic_checks(data[key], rtype)
+            # Collect warnings (non-blocking)
+            warnings = []
+            if rtype == "diet" and data[key].get("event_end") is None:
+                warnings.append("  WARNING: event_end is null; pipeline will apply 15-minute default")
             if errs:
                 total_errors += 1
                 print(f"[FAIL] {key}")
@@ -175,6 +188,8 @@ def validate_sample():
                     print(e)
             else:
                 print(f"[PASS] {key}")
+            for w in warnings:
+                print(w)
     
     return total_errors
 

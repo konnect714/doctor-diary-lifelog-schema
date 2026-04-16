@@ -72,7 +72,13 @@
       "type": ["integer", "null"],
       "minimum": 0,
       "maximum": 259,
-      "description": "Derived discrete token: clip(round(glucose_mgdl) - 40, 0, 259). Null if glucose_mgdl is null."
+      "description": "Derived discrete token: clip(round(glucose_mgdl) - 40, 0, 259). Null if glucose_mgdl is null. Default tokenization scheme (260 bins, 40-299 mg/dL). For GluFormer compatibility, see glucose_token_extended field."
+    },
+    "glucose_token_extended": {
+      "type": ["integer", "null"],
+      "minimum": 0,
+      "maximum": 459,
+      "description": "Optional extended tokenization for GluFormer compatibility: clip(round(glucose_mgdl) - 40, 0, 459). Supports 460 bins (40-500 mg/dL). Use only when training with GluFormer models."
     },
     "missing_mask": {
       "type": "integer",
@@ -88,6 +94,11 @@
         "calibration",
         "manual_removal",
         "out_of_range",
+        "sensor_battery_low",
+        "device_error",
+        "connectivity_loss",
+        "sensor_removed_temporary",
+        "sensor_replacement",
         "unknown"
       ],
       "description": "Required when missing_mask == 1"
@@ -134,6 +145,28 @@
     "rate_of_change_mgdl_per_min": {
       "type": ["number", "null"],
       "description": "Optional: glucose change rate if provided by device"
+    },
+    "cgm_data_completeness": {
+      "type": ["number", "null"],
+      "minimum": 0,
+      "maximum": 1,
+      "description": "Fraction of valid readings in the day (0-1)"
+    },
+    "imputation_applied": {
+      "type": ["boolean", "null"],
+      "description": "Whether this value was imputed due to missing data"
+    },
+    "imputation_method": {
+      "type": ["string", "null"],
+      "enum": [
+        null,
+        "linear",
+        "mean",
+        "hermite",
+        "tai",
+        "random_forest"
+      ],
+      "description": "Method used if imputation_applied is true"
     }
   },
   "additionalProperties": false

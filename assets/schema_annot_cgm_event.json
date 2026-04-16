@@ -18,6 +18,7 @@
     "schema_version": {"type": "string", "const": "1.0.0"},
     "cgm_window_id": {
       "type": "string",
+      "pattern": "^[a-z]+_u_[A-Za-z0-9]+_\\d{8}_\\d{6}$",
       "description": "Unique id for the CGM window being annotated"
     },
     "user_id_hash": {"type": "string", "pattern": "^[A-Za-z0-9_-]+$"},

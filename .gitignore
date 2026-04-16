@@ -46,6 +46,7 @@ exports/
 *.npz
 *.h5
 *.hdf5
+*.zarr
 *.parquet
 *.csv
 

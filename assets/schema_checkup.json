@@ -134,6 +134,23 @@
     "_missing_fields": {
       "type": "array",
       "items": {"type": "string"}
+    },
+    "cohort_type": {
+      "type": "string",
+      "enum": ["adult", "pediatric", "pregnant", "elderly"],
+      "default": "adult",
+      "description": "Cohort classification for model selection and normalization"
+    },
+    "staleness_days": {
+      "type": ["integer", "null"],
+      "minimum": 0,
+      "description": "Days since this exam relative to CGM data start"
+    },
+    "max_validity_days": {
+      "type": "integer",
+      "minimum": 0,
+      "default": 730,
+      "description": "Maximum days this checkup should be considered valid for model conditioning"
     }
   },
   "additionalProperties": false

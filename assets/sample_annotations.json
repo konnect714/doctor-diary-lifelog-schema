@@ -1,7 +1,7 @@
 {
   "annot_meal_sample": {
     "schema_version": "1.0.0",
-    "event_id": "meal_8a7b6c5d",
+    "event_id": "meal_u_abc123_20260416_073000",
     "annotator_id": "snu_med_007",
     "annotator_role": "resident_endocrinology",
     "annotated_at": "2026-04-18T14:30:00+09:00",
@@ -33,7 +33,7 @@
         "peak_glucose_mgdl": 245,
         "nadir_glucose_mgdl": null,
         "severity": "severe",
-        "likely_cause": "meal_8a7b6c5d",
+        "likely_cause": "meal_u_abc123_20260416_073000",
         "likely_cause_type": "meal",
         "clinical_notes": "정상 범위 초과 기간 65분"
       }
